@@ -1,4 +1,3 @@
-
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Calendar } from "@/components/ui/calendar";
@@ -7,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, Mail } from "lucide-react";
 import { useState } from "react";
 import type { CalendarEvent } from "@/types/calendar";
+import { TaskList } from "@/components/tasks/TaskList";
 
 // Mock calendar events data
 const mockEvents: CalendarEvent[] = [
@@ -76,6 +76,7 @@ const CalendarPage = () => {
         
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-7xl mx-auto space-y-6">
+            <TaskList />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
