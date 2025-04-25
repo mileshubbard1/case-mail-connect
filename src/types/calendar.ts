@@ -1,3 +1,4 @@
+
 export interface CalendarEvent {
   id: string;
   title: string;
@@ -13,6 +14,7 @@ export interface AssociatedEmail {
   sender: string;
   date: string;
   preview: string;
+  priority?: 'high' | 'medium' | 'low';
 }
 
 export interface Task {

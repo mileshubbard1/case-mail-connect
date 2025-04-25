@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,12 +9,14 @@ import {
   MoreVertical,
   Search,
   ChevronDown,
-  RefreshCw
+  RefreshCw,
+  PriorityHigh,
+  Mail
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 
-// Mock email data
+// Updated mock email data with priorities
 const mockEmails = [
   {
     id: "1",
@@ -28,7 +29,8 @@ const mockEmails = [
     starred: true,
     important: true,
     category: "client",
-    case: "Smith v. Jones"
+    case: "Smith v. Jones",
+    priority: "high" as const
   },
   {
     id: "2",
@@ -41,7 +43,8 @@ const mockEmails = [
     starred: false,
     important: true,
     category: "court",
-    case: "Brighton Estates"
+    case: "Brighton Estates",
+    priority: "high" as const
   },
   {
     id: "3",
@@ -54,7 +57,8 @@ const mockEmails = [
     starred: false,
     important: false,
     category: "internal",
-    case: "Smith v. Jones"
+    case: "Smith v. Jones",
+    priority: "medium" as const
   },
   {
     id: "4",
@@ -67,7 +71,8 @@ const mockEmails = [
     starred: true,
     important: false,
     category: "client",
-    case: "ClientCorp Merger"
+    case: "ClientCorp Merger",
+    priority: "low" as const
   },
   {
     id: "5",
@@ -80,7 +85,8 @@ const mockEmails = [
     starred: false,
     important: false,
     category: "internal",
-    case: "Brighton Estates"
+    case: "Brighton Estates",
+    priority: "low" as const
   },
 ];
 
@@ -92,6 +98,19 @@ interface EmailItemProps {
 }
 
 const EmailItem = ({ email, isSelected, onSelect, onClick }: EmailItemProps) => {
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high':
+        return 'text-red-500';
+      case 'medium':
+        return 'text-yellow-500';
+      case 'low':
+        return 'text-blue-500';
+      default:
+        return 'text-gray-500';
+    }
+  };
+
   return (
     <div 
       className={`flex items-center gap-3 p-3 hover:bg-muted cursor-pointer transition-colors border-b ${!email.read ? 'bg-legal-light/30' : ''}`}
@@ -114,17 +133,13 @@ const EmailItem = ({ email, isSelected, onSelect, onClick }: EmailItemProps) => 
         >
           <Star className={`h-4 w-4 ${email.starred ? 'fill-yellow-400 text-yellow-400' : ''}`} />
         </Button>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="p-0 h-auto" 
-          onClick={(e) => { 
-            e.stopPropagation(); 
-            // Toggle important logic would go here
-          }}
-        >
-          <AlertCircle className={`h-4 w-4 ${email.important ? 'fill-red-500 text-red-500' : ''}`} />
-        </Button>
+        <div className="flex items-center">
+          {email.priority === 'high' ? (
+            <PriorityHigh className={`h-4 w-4 ${getPriorityColor(email.priority)}`} />
+          ) : (
+            <Mail className={`h-4 w-4 ${getPriorityColor(email.priority || 'default')}`} />
+          )}
+        </div>
       </div>
       
       <div className="flex-1 min-w-0">
@@ -165,6 +180,7 @@ const EmailItem = ({ email, isSelected, onSelect, onClick }: EmailItemProps) => 
 export function EmailList() {
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState<string | null>(null);
 
   const handleSelectEmail = (id: string) => {
     if (selectedEmails.includes(id)) {
@@ -184,8 +200,25 @@ export function EmailList() {
 
   const handleEmailClick = (id: string) => {
     console.log("Opening email:", id);
-    // Logic to open email
   };
+
+  // Sort emails by priority and date
+  const sortedEmails = [...mockEmails].sort((a, b) => {
+    // First sort by priority
+    const priorityOrder = { high: 0, medium: 1, low: 2, undefined: 3 };
+    const priorityDiff = (priorityOrder[a.priority || 'undefined'] || 3) - 
+                        (priorityOrder[b.priority || 'undefined'] || 3);
+    
+    if (priorityDiff !== 0) return priorityDiff;
+    
+    // Then sort by date (assuming newer dates should be first)
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+
+  // Filter emails based on priority if a filter is selected
+  const filteredEmails = priorityFilter
+    ? sortedEmails.filter(email => email.priority === priorityFilter)
+    : sortedEmails;
 
   return (
     <div className="flex flex-col h-full border rounded-md overflow-hidden">
@@ -241,11 +274,22 @@ export function EmailList() {
             <MoreVertical className="h-4 w-4" />
           </Button>
         </div>
+
+        <div className="ml-auto flex gap-2">
+          <Button
+            variant={priorityFilter === 'high' ? 'secondary' : 'ghost'}
+            size="sm"
+            onClick={() => setPriorityFilter(priorityFilter === 'high' ? null : 'high')}
+          >
+            <PriorityHigh className="h-4 w-4 mr-1 text-red-500" />
+            High Priority
+          </Button>
+        </div>
       </div>
       
       {/* Email list */}
       <div className="flex-1 overflow-y-auto">
-        {mockEmails.map(email => (
+        {filteredEmails.map(email => (
           <EmailItem 
             key={email.id} 
             email={email} 
