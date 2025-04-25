@@ -10,13 +10,12 @@ import {
   Search,
   ChevronDown,
   RefreshCw,
-  PriorityHigh,
+  ArrowUp,
   Mail
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 
-// Updated mock email data with priorities
 const mockEmails = [
   {
     id: "1",
@@ -128,14 +127,13 @@ const EmailItem = ({ email, isSelected, onSelect, onClick }: EmailItemProps) => 
           className="p-0 h-auto" 
           onClick={(e) => { 
             e.stopPropagation(); 
-            // Toggle star logic would go here
           }}
         >
           <Star className={`h-4 w-4 ${email.starred ? 'fill-yellow-400 text-yellow-400' : ''}`} />
         </Button>
         <div className="flex items-center">
           {email.priority === 'high' ? (
-            <PriorityHigh className={`h-4 w-4 ${getPriorityColor(email.priority)}`} />
+            <ArrowUp className={`h-4 w-4 ${getPriorityColor(email.priority)}`} />
           ) : (
             <Mail className={`h-4 w-4 ${getPriorityColor(email.priority || 'default')}`} />
           )}
@@ -202,27 +200,22 @@ export function EmailList() {
     console.log("Opening email:", id);
   };
 
-  // Sort emails by priority and date
   const sortedEmails = [...mockEmails].sort((a, b) => {
-    // First sort by priority
     const priorityOrder = { high: 0, medium: 1, low: 2, undefined: 3 };
     const priorityDiff = (priorityOrder[a.priority || 'undefined'] || 3) - 
                         (priorityOrder[b.priority || 'undefined'] || 3);
     
     if (priorityDiff !== 0) return priorityDiff;
     
-    // Then sort by date (assuming newer dates should be first)
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 
-  // Filter emails based on priority if a filter is selected
   const filteredEmails = priorityFilter
     ? sortedEmails.filter(email => email.priority === priorityFilter)
     : sortedEmails;
 
   return (
     <div className="flex flex-col h-full border rounded-md overflow-hidden">
-      {/* Search and top actions */}
       <div className="p-3 border-b flex gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -238,7 +231,6 @@ export function EmailList() {
         </Button>
       </div>
       
-      {/* Email list toolbar */}
       <div className="border-b p-2 flex items-center gap-1">
         <Checkbox 
           checked={selectedEmails.length === mockEmails.length && mockEmails.length > 0} 
@@ -281,13 +273,12 @@ export function EmailList() {
             size="sm"
             onClick={() => setPriorityFilter(priorityFilter === 'high' ? null : 'high')}
           >
-            <PriorityHigh className="h-4 w-4 mr-1 text-red-500" />
+            <ArrowUp className={`h-4 w-4 mr-1 text-red-500`} />
             High Priority
           </Button>
         </div>
       </div>
       
-      {/* Email list */}
       <div className="flex-1 overflow-y-auto">
         {filteredEmails.map(email => (
           <EmailItem 
