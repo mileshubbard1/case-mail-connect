@@ -1,3 +1,4 @@
+
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Calendar } from "@/components/ui/calendar";
@@ -75,9 +76,14 @@ const CalendarPage = () => {
         <Header />
         
         <main className="flex-1 overflow-auto p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
-            <TaskList />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-6 gap-6">
+            {/* Tasks Section - Spans 4 columns on large screens */}
+            <div className="lg:col-span-4 space-y-6">
+              <TaskList />
+            </div>
+
+            {/* Calendar and Events Section - Spans 2 columns on large screens */}
+            <div className="lg:col-span-2 space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle>Court Calendar</CardTitle>
@@ -96,7 +102,7 @@ const CalendarPage = () => {
                 <CardHeader>
                   <CardTitle>Events & Associated Emails</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="max-h-[400px] overflow-y-auto">
                   {selectedEvents.length === 0 ? (
                     <p className="text-muted-foreground text-sm">
                       Select a date to view associated events and emails
