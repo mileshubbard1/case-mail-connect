@@ -21,13 +21,17 @@ is just a value of 0.1 per octave.
 
 ## 1. Build (macOS)
 
-You need Xcode (or the Command Line Tools) and CMake 3.22 or newer (`brew install cmake`).
+You need the Command Line Tools (`xcode-select --install`) and CMake 3.22 or newer.
+To get CMake, install Homebrew from https://brew.sh, then run `brew install cmake`.
 
 ```sh
 cd es9-cv
-cmake -B build -G Xcode            # first run downloads JUCE 8.0.4
-cmake --build build --config Release
+cmake -B build -DCMAKE_BUILD_TYPE=Release   # first run downloads JUCE 8.0.4
+cmake --build build -j8
 ```
+
+(You only need `-G Xcode` if you have the full Xcode app and want an Xcode
+project. If you switch between the two, delete the `build` folder first.)
 
 The build copies `ES9 CV.component` to `~/Library/Audio/Plug-Ins/Components/`.
 Check it:
